@@ -1,0 +1,67 @@
+name: Build Hebrew APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ 'hebrew-apk' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+
+    - uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Gradle
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle', 'gradle/wrapper/gradle-wrapper.properties') }}
+        restore-keys: gradle-${{ runner.os }}-
+
+    - name: Generate throwaway signing key
+      run: |
+        keytool -genkeypair -v -keystore "$RUNNER_TEMP/release.keystore" -alias pcapdroid \
+          -keyalg RSA -keysize 4096 -validity 10000 \
+          -storepass hebrewbuild -keypass hebrewbuild \
+          -dname "CN=PCAPdroid Hebrew Build, O=PCAPdroid Hebrew Build, C=IL"
+
+    - name: Assemble release APK
+      run: |
+        ./gradlew --no-daemon assembleStandardRelease \
+          -Pandroid.injected.signing.store.file="$RUNNER_TEMP/release.keystore" \
+          -Pandroid.injected.signing.store.password=hebrewbuild \
+          -Pandroid.injected.signing.key.alias=pcapdroid \
+          -Pandroid.injected.signing.key.password=hebrewbuild
+
+    - name: Verify Hebrew resources are packaged
+      run: |
+        APK=$(find app/build/outputs/apk -name '*.apk' | head -n 1)
+        echo "APK: $APK"
+        if grep -aq "ברירת המחדל של המערכת" <(unzip -p "$APK" resources.arsc); then
+          echo "OK: Hebrew strings are packaged in resources.arsc"
+        else
+          echo "ERROR: Hebrew strings are missing from the APK"
+          exit 1
+        fi
+        AAPT2=$(ls "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -n 1)
+        echo "--- packaged locales ---"
+        "$AAPT2" dump configurations "$APK" || true
+        echo "--- app info ---"
+        "$AAPT2" dump badging "$APK" | head -n 5
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: pcapdroid-hebrew-apk
+        path: app/build/outputs/apk/**/*.apk
+        if-no-files-found: error

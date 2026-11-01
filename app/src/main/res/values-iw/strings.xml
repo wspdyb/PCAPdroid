@@ -328,7 +328,7 @@
     <string name="no_rules_to_export">אין כללים לייצוא</string>
     <string name="rules_merge_msg">לשמור על הכללים הקיימים?</string>
     <string name="keep_action">שמור</string>
-    <string name="discard_action">בטל</string>
+    <string name="discard_action">החלף</string>
     <string name="rules_delete_confirm">למחוק את הכללים שנבחרו?</string>
     <string name="blocklist">רשימת חסימה</string>
     <string name="num_configured_rules">כללים מוגדרים</string>
@@ -580,7 +580,7 @@
     <string name="settings_imported">ההגדרות יובאו</string>
     <string name="restart_app_action">הפעל את האפליקציה מחדש</string>
     <string name="skipped_prefs_import">הערה: לא ניתן היה לייבא את ההגדרות הבאות, מכיוון שהן לא מוכרות או לא תקינות:\n%1$s</string>
-    <string name="imported_license_invalid">הרישיון המיובא אינו תקף במכשיר זה, ולכן התכונות בתשלום לא יהיו זמינות. רישיונות קשורים למכשיר מסוים ולמתקין אפליקציה מסוים</string>
+    <string name="imported_license_invalid">הרישיון המיובא אינו תקף במכשיר זה, ולכן התכונות בתשלום לא יהיו זמינות. רישיונות קשורים למכשיר מסוים ולהתקנה מסוימת של האפליקציה</string>
     <string name="import_capture_list_confirm">הגיבוי מכיל %1$d לכידות, בעוד שברשימה במכשיר זה קיימות כבר %2$d לכידות.\n\nכיצד ברצונך להמשיך?</string>
     <string name="merge_action">מיזוג</string>
     <string name="replace_action">החלפה</string>
